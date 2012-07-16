@@ -1,0 +1,21 @@
+<?php if($_SESSION['logged_in']): ?>
+<form action="<?=BASE_URL?>/add" method="post" class="add-entry">
+  <dl>
+    <dt>Title:
+    <dd><input type=text size=30 name=title>
+    <dt>Text:
+    <dd><textarea name=text rows=5 cols=40></textarea>
+    <dd><input type=submit value=Share>
+  </dl>
+</form>
+<?php endif; ?>
+
+<ul class="entries">
+<?php if(count($entries)): ?>
+<?php foreach($entries as $entry): ?>
+  <li><h2><?=htmlentities($entry['title'], ENT_QUOTES)?></h2><?=$entry['text']?>
+<?php endforeach; ?>
+<?php else: ?>
+  <li><em>Unbelievable.  No entries here so far</em>
+<?php endif; ?>
+</ul>

@@ -1,0 +1,8 @@
+Your web server should be configured to rewrite all requests to public/index.php.
+
+If you are running nginx, your server's configuration block should have rewrite conditions that look something like:
+
+if (!-e $request_filename) {
+  rewrite ^.*$ /index.php last;
+}
+

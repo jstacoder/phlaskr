@@ -1,0 +1,15 @@
+<h2>Login</h2>
+
+<?php if($error): ?>
+<p class=error><strong>Error:</strong><?=$error?></p>
+<?php endif; ?>
+
+<form action="<?=BASE_URL?>/login" method="post">
+  <dl>
+    <dt>Username:
+    <dd><input type="text" name="username"/>
+    <dt>Password:
+    <dd><input type="password" name="password"/>
+    <dd><input type="submit" value="Login"/>
+  </dl>
+</form>

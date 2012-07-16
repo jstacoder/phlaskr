@@ -1,0 +1,21 @@
+<!doctype html>
+<title>Phlaskr</title>
+<link rel="stylesheet" type="text/css" href="<?=BASE_URL?>/css/styles.css"/>
+<div class="page">
+  <h1>Phlaskr</h1>
+
+  <div class="metanav">
+  <?php if(!$_SESSION['logged_in']): ?>
+    <a href="login">log in</a>
+  <?php else: ?>
+    <a href="logout">log out</a>
+  <?php endif; ?>
+  </div>
+
+  <?php if($_SESSION['flash']): ?>
+    <div class="flash"><?=$_SESSION['flash']?></div>
+  <?php endif; ?>
+
+  <?php include $template; ?>
+</div>
+
