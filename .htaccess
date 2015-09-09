@@ -1,0 +1,10 @@
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ /public/index.php?request=$1
+
+
+#order deny,allow
+#deny from all 
+#allow from 107.204.221.85
+
+
