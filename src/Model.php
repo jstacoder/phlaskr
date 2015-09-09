@@ -6,7 +6,11 @@ class Model
 
   public function __construct($path)
   {
-    $this->_db = new PDO('sqlite:' . $path);
+    if(DBDRIVER=='sqlite'){
+       $this->_db = new PDO('sqlite:' . $path);
+    }else{
+        $this->_db = new PDO('pgsql:host=ec2-50-19-208-138.compute-1.amazonaws.com;port=5432;dbname=d5k68ubselumrp','obyeuglafabvok','YcB0PUlJzkoC2oWvLrxd2iyMwt');  
+    }
   }
   public function getDB(){
     return $this->_db;
