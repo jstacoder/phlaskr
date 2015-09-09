@@ -16,8 +16,24 @@ class Controller
   private function __construct($routes)
   {
     $this->_routes = $routes;
-    $this->_model = new Model(TMP_DIR . '/phlaskr.db');
+    $this->_model = new Model(SRC_DIR . '/phlaskr.db');
     $this->_view = new View(TPL_DIR . '/layout.phtml');
+  }
+
+  private function _flash($data,$reset=false){
+        if($reset){
+            unset($_SESSION['flash']);
+            $_SESSION['flash'] = array();
+        }
+        $_SESSION['flash'][] = $data;
+  }
+
+  public function parse_uri()
+  {
+    $rtn = array();
+    $tmp = parse_url($_SERVER['REQUEST_URI'])['query'];
+    parse_str($tmp,$rtn);
+    return $rtn;
   }
 
   private function __clone()
@@ -28,6 +44,9 @@ class Controller
   {
     $entries = $this->_model->get_entries();
     echo $this->_view->evaluate('/show_entries.phtml', array('entries' => $entries));
+  }
+  public function redirect($uri){
+    echo '<meta http-equiv="refresh" content="0; URL='.$uri.'">';
   }
 
   public function add_entry()
@@ -42,29 +61,36 @@ class Controller
     {
       $title = $_POST['title'];
       $text = $_POST['text'];
+      $tag_list = !empty($_POST['tags']) ? $_POST['tags'] : '';
+
+      $tags = explode(',',$tag_list);
 
       if($this->_model->put_entry($title, $text))
       {
-        $_SESSION['flash'] = 'New entry was successfully posted';
-        header('Location: /');
+        if(!empty($tags)){
+            $id = $this->_model->getDB()->lastInsertId();
+            $this->_model->add_tags($id,$tags);
+        }
+        $this->_flash('New entry was successfully posted',true);
+        $this->redirect('/');
       }
-
       else
       {
-        $_SESSION['flash'] = 'Error encountered when inserting entry';
-        header('Location: /');
+        $this->_flash('Error encountered when inserting entry');
+        $this->redirect('/');
       }
     } 
 
     else
     {
-      $_SESSION['flash'] = 'Title and Text are required fields';
-      header('Location: /');
+      $this->_flash('Title and Text are required fields');
+      $this->redirect('/');
     }
   }
 
   public function login()
   {
+    $error = '';
     if($_SERVER['REQUEST_METHOD'] === 'POST')
     {
       if($_REQUEST['username'] !== USERNAME)
@@ -81,8 +107,8 @@ class Controller
       {
         $error = NULL;
         $_SESSION['logged_in'] = TRUE;
-        $_SESSION['flash'] = 'You were logged in';
-        header('Location: /');
+        $this->_flash('You were logged in',true);
+      $this->redirect('/');
         return;
       }
     }
@@ -95,10 +121,24 @@ class Controller
     if($_SESSION['logged_in'])
     {
       unset($_SESSION['logged_in']);
-      $_SESSION['flash'] = 'You were logged out';
+      $this->_flash('You were logged out',true);
     }
 
-    header('Location: /');
+      $this->redirect('/');
+    return;
+  }
+  public function delete_entry()
+  {
+      if(!$_SESSION['logged_in'])
+        {
+           header('Status: 403 Forbidden');
+           echo $this->_view->evaluate('/40x.phtml', array('code' => 403));
+        }
+        $data = $this->parse_uri();
+        $this->_model->delete_entry($data['id']);
+        $this->_flash('Deleted an entry',true);
+      $this->redirect('/');
+        return;
   }
 
   /**
@@ -127,11 +167,11 @@ class Controller
     }
   }
 
-  private static $_instance;
+  private static $_instance = null;
 
   public static function getInstance($routes)
   {
-    self::$_instance = new self($routes);
+    self::$_instance = is_null(self::$_instance) ? new static($routes) : self::$_instance;
     return self::$_instance;
   }
 }

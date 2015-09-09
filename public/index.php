@@ -9,22 +9,41 @@
  */
 
 // Start or resume session handling
-session_start();
-
-// Include our configuration variables
+//
+if(!session_id()){
+    session_start();
+}
 require realpath('..') . '/config.php';
 
+// Include our configuration variables
+
 // Declare our application's valid URL routes
-$routes = array(
-  '/' => array('GET' => 'show_entries'),
 
-  '/add' => array('POST' => 'add_entry'),
+$routes = require dirname(dirname(__FILE__)) . '/'.'src'.'/'.'routes.php';
+$x = array(
+    '/' => array(
+        'GET' => 'show_entries'
+    ),
 
-  '/login' => array('GET' => 'login', 'POST' => 'login'),
+    '/add' => array(
+        'POST' => 'add_entry'
+    ),
 
-  '/logout' => array('GET' => 'logout')
+    '/login' => array(
+        'GET' => 'login', 
+        'POST' => 'login'
+    ),
+
+    '/logout' => array(
+        'GET' => 'logout'
+    ),
+
+    '/delete' => array(
+        'GET' => 'delete_entry'
+    )
 );
 
 // Instantiate our front controller and handle the request
 $controller = Controller::getInstance($routes);
-$controller->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+$path = parse_url($_SERVER['REQUEST_URI'])['path'];
+$controller->dispatch($_SERVER['REQUEST_METHOD'], $path);

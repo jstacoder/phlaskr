@@ -1,21 +1,46 @@
 <!doctype html>
+<html>
+<head>
 <title>Phlaskr</title>
-<link rel="stylesheet" type="text/css" href="<?=BASE_URL?>/css/styles.css"/>
-<div class="page">
-  <h1>Phlaskr</h1>
+<link rel="stylesheet" type="text/css" href="<?php echo BASE_URL; ?>/css/styles.css"/>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+</head>
+<body>
+<div class=container>
+    <div class=row>
+    <div class="page col-md-5 col-md-offset-3">
+      <h1 class=page-header><a href="/">Phlaskr</a></h1>
 
-  <div class="metanav">
-  <?php if(!$_SESSION['logged_in']): ?>
-    <a href="login">log in</a>
-  <?php else: ?>
-    <a href="logout">log out</a>
-  <?php endif; ?>
-  </div>
+      <div class="metanav">
+     <?php if(!$_SESSION['logged_in']): ?>
+        <a href="login">log in</a>
+      <?php else: ?>
+        <a href="logout">log out</a>
+      <?php endif; ?>
+    </div>
 
-  <?php if($_SESSION['flash']): ?>
-    <div class="flash"><?=$_SESSION['flash']?></div>
-  <?php endif; ?>
-
-  <?php include $template; ?>
+      <?php if(isset($_SESSION['flash']) && $_SESSION['flash']): ?>
+        <?php
+            $_flash = function($text){
+                echo "<div class='alert alert-info'>$text</div>";
+            };
+        ?>
+        <?php array_map($_flash,$_SESSION["flash"]); ?>
+     <?php endif; ?>
+     <?php include $template; ?>
 </div>
-
+</div>
+    <script>
+    var alertCount = document.querySelectorAll('.alert').length;
+    if(alertCount){
+        function killFlash(){ 
+            document.querySelectorAll('.alert')[0].remove();
+        } 
+        for(var i = 0;i < alertCount; i++){            
+            setTimeout(killFlash,5000);
+        }
+    }
+</script>
+</body>
+</html>

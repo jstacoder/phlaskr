@@ -4,12 +4,18 @@
 <p class=error><strong>Error:</strong><?=$error?></p>
 <?php endif; ?>
 
-<form action="<?=BASE_URL?>/login" method="post">
-  <dl>
-    <dt>Username:
-    <dd><input type="text" name="username"/>
-    <dt>Password:
-    <dd><input type="password" name="password"/>
-    <dd><input type="submit" value="Login"/>
-  </dl>
+<?php $input = function($type,$name){
+    $rtn = '<div class="form-group">';
+    $rtn .="<label class='control-label'>$name</label>";
+    $rtn .="<input class=form-control type=$type name=$name id=$name />";
+    $rtn .="</div>";
+    return $rtn;
+};
+?>
+
+<form action="<?=BASE_URL?>/login" method="post" class=form>
+    <?php foreach(array(array('username','text'),array('password','password')) as $i): ?>
+        <?php echo $input($i[1],$i[0]); ?>
+    <?php endforeach; ?>
+    <input type="submit" value="Login" class="btn btn-sm btn-default" />
 </form>

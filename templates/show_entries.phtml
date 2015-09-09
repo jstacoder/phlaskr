@@ -1,21 +1,63 @@
-<?php if($_SESSION['logged_in']): ?>
-<form action="<?=BASE_URL?>/add" method="post" class="add-entry">
-  <dl>
-    <dt>Title:
-    <dd><input type=text size=30 name=title>
-    <dt>Text:
-    <dd><textarea name=text rows=5 cols=40></textarea>
-    <dd><input type=submit value=Share>
-  </dl>
+<div class=row>
+<div class=col-md-12>
+<?php if(isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
+<form action="<?php echo BASE_URL; ?>/add" method="post" class="add-entry form">
+    <div class=form-group>
+        <label class=control-label>Title</label>
+        <input type=text size=30 name=title class=form-control>
+    </div>
+    <div class=form-group>
+        <label class=control-label>Text</label>
+        <textarea name=text rows=5 cols=40 class=form-control></textarea>
+    </div>
+    <div class=form-group>
+        <label class=control-label>Tags</label>
+        <input type=text size=30 name=tags class=form-control />
+    </div>
+    <input type=submit value=Share class="btn btn-default btn-sm">
 </form>
 <?php endif; ?>
 
 <ul class="entries">
 <?php if(count($entries)): ?>
-<?php foreach($entries as $entry): ?>
-  <li><h2><?=htmlentities($entry['title'], ENT_QUOTES)?></h2><?=$entry['text']?>
-<?php endforeach; ?>
+    <?php foreach($entries as $entry): ?>
+          <li>
+                <?php if(isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
+                    <a href="/delete?id=<?php echo $entry->id; ?>" class="close">X</a>
+                <?php endif; ?>
+                <h2 class=page-header>
+                    <?php echo htmlentities($entry->title, ENT_QUOTES); ?>
+                </h2>
+                <p>
+                    <?php echo $entry->text; ?>
+                </p>
+                <div class=row>
+                    <div class="col-md-12 post-meta">
+                        <span class="fa fa-user"></span>by: <a href="#">Kyle</a> | <span class="fa fa-calendar"></span>
+                        <?php echo $entry->added; ?> | <span class="fa fa-comment"></span><a href="#"> X Comments</a> <br/> 
+                        <?php if(!empty($entry->tags)): ?>
+                            <span class="fa fa-tags"></span> tags : <div class=row>
+                            <?php $c = 0; ?>
+                            <?php foreach($entry->tags as $tag): ?>
+                                <?php if($c==0): ?>                                
+                                    <div class=col-md-4>
+                                <?php endif; ?>
+                                    <a href="#"><span class="label label-info"><?php echo $tag->name; ?></span></a>
+                                <?php if($c==4||$c==sizeof($entry->tags)-1):?>
+                                    <?php $c = 0; ?>
+                                    </div>
+                                <?php else: ?>
+                                    <?php $c = $c + 1; ?>
+                                <?php endif; ?>                            
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </li>
+    <?php endforeach; ?>
 <?php else: ?>
-  <li><em>Unbelievable.  No entries here so far</em>
+        <em>Unbelievable.  No entries here so far</em>
 <?php endif; ?>
 </ul>
+</div>
+</div>
