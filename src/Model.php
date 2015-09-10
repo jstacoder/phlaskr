@@ -100,7 +100,7 @@ class Model
 
   public function delete_entry($id)
   {
-    $query = $this->_db->prepare("delete from entries where `id` = :id");
+    $query = $this->_db->prepare("delete from entries where entries.id = :id");
     $query->bindParam(':id',$id);
     return $query->execute();
   }
