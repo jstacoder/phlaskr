@@ -111,8 +111,18 @@ class Model
 
   public function delete_entry($id)
   {
-    $query = $this->_db->prepare("delete from entries where entries.id = :id");
-    $query->bindParam(':id',$id);
-    return $query->execute();
+      $tags = $this->get_entry_tags($id);
+      foreach($tags as $tag){
+          $this->delete_tag($tag->id);
+      }
+      $query = $this->_db->prepare("delete from entries where entries.id = :id");
+      $query->bindParam(':id',$id);
+      return $query->execute();
+  }
+  public function delete_tag($id)
+  {
+      $query = $this->_db->prepare("delete from tags where tags.id = :id");
+      $query->bindParam(':id',$id);
+      return $query->execute();
   }
 }
