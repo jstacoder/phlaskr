@@ -47,7 +47,7 @@ class Model
   }
 
   public function get_entry_tags($eid){
-     $sql = 'SELECT tags.name '
+     $sql = 'SELECT tags.name, tags.id '
            .'FROM entries JOIN tags ON entries.id = tags.entry_id '
            .'WHERE entries.id = :eid';
       $s = $this->_db->prepare($sql);
