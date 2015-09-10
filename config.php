@@ -8,7 +8,7 @@ if(isset($_SERVER['DATABASE_URL'])){
 
 define('PWD', realpath(dirname(__file__)));
 
-define('BASE_URL', 'http://phlaskr.com');
+define('BASE_URL', 'https://phlaskr-php.herokuapp.com');
 
 define('SRC_DIR', PWD . '/src');
 define('TMP_DIR',SRC_DIR);
