@@ -35,6 +35,17 @@ class Model
     return $success;
   }
 
+  public function _get_last_entry_id(){
+        $lid = $this->_db->prepare('select id from entries');
+        $lid->execute();
+        
+        $ids = array();
+        while($o = $lid->fetchObject()){
+            $ids[] = $o->id;
+        }
+        return max($ids);
+  }
+
   public function get_entry_tags($eid){
      $sql = 'SELECT tags.name '
            .'FROM entries JOIN tags ON entries.id = tags.entry_id '

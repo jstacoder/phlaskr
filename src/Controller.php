@@ -68,7 +68,7 @@ class Controller
       if($this->_model->put_entry($title, $text))
       {
         if(!empty($tags)){
-            $id = $this->_model->getDB()->lastInsertId();
+            $id = $this->_model->_get_last_entry_id();
             $this->_model->add_tags($id,$tags);
         }
         $this->_flash('New entry was successfully posted',true);
