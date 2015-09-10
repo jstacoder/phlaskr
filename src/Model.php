@@ -4,7 +4,7 @@ class Model
 {
   private $_db;
 
-  public function __construct($path)
+  public function __construct()
   {
     //if(DBDRIVER=='sqlite'){
     //   $this->_db = new PDO('sqlite:' . $path);
@@ -17,27 +17,29 @@ class Model
   }
 
   public function add_tags($entry_id,$tags=array()){
-    $sql = 'insert into tags (name) values (:name)';
+    $sql = 'insert into tags (name,entry_id) values (:name,:eid)';
     $q = $this->_db->prepare($sql);
-    $results = array();
-    $ids = array();
+    $success = true;
     foreach($tags as $tag){
+        
         $q->bindParam(':name',$tag);
-        $results[$tag] = $q->execute();
-        $ids[] = $this->_db->lastInsertId();
-    }
-    $sql = 'insert into tags_entry (tag_id,entry_id) values (:tid,:eid)';
-    $q = $this->_db->prepare($sql);
-    foreach($ids as $id){
         $q->bindParam(':eid',$entry_id);
-        $q->bindParam(':tid',$id);
-        $results['tags_entrys'.$id] = $q->execute();
+
+        $current_success = $q->execute();
+        if($success){
+            if(!$current_success){
+                $success = false;
+            }
+        }
     }
-    return $results;
+    return $success;
   }
 
   public function get_entry_tags($eid){
-      $s = $this->_db->prepare('select name from tags join tags_entry on tags_entry.tag_id = tags.id where tags_entry.entry_id = :eid');
+     $sql = 'SELECT tags.name '
+           .'FROM entries JOIN tags ON entries.id = tags.entry_id '
+           .'WHERE entries.id = :eid';
+      $s = $this->_db->prepare($sql);
       $s->bindParam(':eid',$eid);
       if($r = $s->execute()){
         return $s->fetchAll(PDO::FETCH_OBJ);
@@ -88,19 +90,14 @@ class Model
     }*/
   }
 
-  private function _get_date()
-  {
-    return date("Y-m-d\TH:i:s",time());
-  }
-
   public function put_entry($title, $text)
   {
     $query = $this->_db->prepare('insert into entries (title, text) values (:title, :text)');
     $query->bindParam(':title', $title);
     $query->bindParam(':text', $text);
-    //$query->bindParam(':added',$this->_get_date());
     return $query->execute();
   }
+
   public function delete_entry($id)
   {
     $query = $this->_db->prepare("delete from entries where `id` = :id");
